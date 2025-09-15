@@ -10,17 +10,14 @@ provider "aws" {
   }
 }
 
-variable "commit_sha" {
-  description = "The commit SHA that triggered this deployment"
-  type        = string
+resource "random_id" "instance" {
+  byte_length = 4
 }
 
-# Use the commit SHA to select a unique AMI, or build a new one
 resource "aws_instance" "example" {
-  ami           = "ami-${var.commit_sha}" # Or use a data source to look up the AMI by tag
+  ami           = "ami-123456" # or your AMI selection logic
   instance_type = "t2.micro"
   tags = {
-    Name        = "instance-${var.commit_sha}"
-    CommitSHA   = var.commit_sha
+    Name = "instance-${random_id.instance.hex}"
   }
 }
