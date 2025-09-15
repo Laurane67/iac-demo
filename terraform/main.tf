@@ -10,7 +10,17 @@ provider "aws" {
   }
 }
 
-resource "aws_instance" "demo" {
-  ami           = "ami-12345678"
+variable "commit_sha" {
+  description = "The commit SHA that triggered this deployment"
+  type        = string
+}
+
+# Use the commit SHA to select a unique AMI, or build a new one
+resource "aws_instance" "example" {
+  ami           = "ami-${var.commit_sha}" # Or use a data source to look up the AMI by tag
   instance_type = "t2.micro"
+  tags = {
+    Name        = "instance-${var.commit_sha}"
+    CommitSHA   = var.commit_sha
+  }
 }
